@@ -1,0 +1,8 @@
+{
+  "name": "arduino-sensor",
+  "version": "1.0.1",
+  "private": true,
+  "dependencies": {
+    "alexa-sdk": "^1.0.10"
+  }
+}

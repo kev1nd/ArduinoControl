@@ -1,0 +1,208 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "arduino",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "LightLevelIntent",
+                    "slots": [],
+                    "samples": [
+                        "How bright is it",
+                        "How light is it",
+                        "how dark is it"
+                    ]
+                },
+                {
+                    "name": "SensorIntent",
+                    "slots": [
+                        {
+                            "name": "SensorName",
+                            "type": "SensorName"
+                        }
+                    ],
+                    "samples": [
+                        "what reading is the {SensorName}",
+                        "what is the value of {SensorName}",
+                        "what is the {SensorName} reading",
+                        "what is the {SensorName} level",
+                        "what is the value of the {SensorName}"
+                    ]
+                },
+                {
+                    "name": "TemperatureIntent",
+                    "slots": [],
+                    "samples": [
+                        "How cold is it",
+                        "How warm is it"
+                    ]
+                },
+                {
+                    "name": "SwitchIntent",
+                    "slots": [
+                        {
+                            "name": "Status",
+                            "type": "SwitchableStatus",
+                            "samples": [
+                                "flash",
+                                "off",
+                                "on"
+                            ]
+                        },
+                        {
+                            "name": "Switchable",
+                            "type": "SwitchableType"
+                        }
+                    ],
+                    "samples": [
+                        "Turn {Status} the {Switchable}",
+                        "Switch {Status} the {Switchable}",
+                        "Set the {Switchable} to {Status}",
+                        "What is the status of the {Switchable}"
+                    ]
+                },
+                {
+                    "name": "DelayIntent",
+                    "slots": [
+                        {
+                            "name": "delay",
+                            "type": "AMAZON.DURATION"
+                        }
+                    ],
+                    "samples": [
+                        "Set the delay to {delay}"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "SensorName",
+                    "values": [
+                        {
+                            "id": "1",
+                            "name": {
+                                "value": "Thermistor"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "name": {
+                                "value": "Temperature"
+                            }
+                        },
+                        {
+                            "id": "3",
+                            "name": {
+                                "value": "Humidity"
+                            }
+                        },
+                        {
+                            "id": "4",
+                            "name": {
+                                "value": "Light Level",
+                                "synonyms": [
+                                    "photoresistor"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "SwitchableStatus",
+                    "values": [
+                        {
+                            "id": "0",
+                            "name": {
+                                "value": "Off",
+                                "synonyms": [
+                                    "No",
+                                    "Dark"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "1",
+                            "name": {
+                                "value": "On",
+                                "synonyms": [
+                                    "Yes",
+                                    "Bright"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "SwitchableType",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Light"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Lamp"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "LED"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "SwitchIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "Status",
+                            "type": "SwitchableStatus",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.690743252727.770743006614"
+                            }
+                        },
+                        {
+                            "name": "Switchable",
+                            "type": "SwitchableType",
+                            "confirmationRequired": false,
+                            "elicitationRequired": false,
+                            "prompts": {}
+                        }
+                    ]
+                }
+            ]
+        },
+        "prompts": [
+            {
+                "id": "Elicit.Slot.690743252727.770743006614",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "Set to what?"
+                    }
+                ]
+            }
+        ]
+    }
+}
+
