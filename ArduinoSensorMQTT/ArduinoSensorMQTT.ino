@@ -45,24 +45,36 @@ void parseStream() {
 
     if (root.success()) {
       Serial.println("Parse success");
+      JsonObject& desired = root["state"]["desired"];
       int ledset = root["state"]["desired"]["ledstate"];
       long delaymil = root["state"]["desired"]["delay"];
-      if (delaymil > 1000) {
+      bool changed = false;
+
+      if (desired.containsKey("delay")) {
         Serial.print("New delay: ");
-        Serial.print(delaymil);
-        Serial.print("  LED:");
-        Serial.println(ledset);
-
-        bool changed = ((delayMillis != delaymil) || (lightOn != ledset));
-
-        if (changed) {
+        Serial.println(delaymil);
+        if (delayMillis != delaymil) {
+          changed = true;
           delayMillis = delaymil;
-          lightOn = ledset;
-          sendState();
         }
-        setLED();
         syncInit = true;
       }
+
+      if (desired.containsKey("ledstate")) {
+        Serial.print("LED:");
+        Serial.println(ledset);
+        if (ledset != lightOn) {
+          changed = true;
+          lightOn = ledset;
+          setLED();
+        }
+      }
+
+      if (changed) {
+        syncInit = true;
+        sendState();
+      }
+
     } else {
       Serial.println("Parse fail");
     }
