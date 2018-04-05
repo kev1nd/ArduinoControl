@@ -28,8 +28,12 @@ MQTTClient client(512);
 
 unsigned long lastMillis = 0;
 
+void logData(String jsonStr) {
+  Serial.println("{\"information\":" + jsonStr + "}");
+}
+
 void logMessage(String msg) {
-  // Serial.println("{\"information\": \"" + msg + "\"}");
+  logData("\"" + msg + "\"");
 }
 
 void connect() {
@@ -52,6 +56,7 @@ void connect() {
 }
 
 void messageReceived(String &topic, String &payload) {
+  logMessage(topic);
   payload.replace("\n","");
   payload.replace("\r","");
   // Serial.println("{\"channel\":\"" + topic + "\",\"payload\":" + payload + "}");
@@ -64,8 +69,6 @@ void publishData() {
     inMsg += Serial.readString();
     delay(100);
   }
-  //logMessage("Request from Arduino:" + inMsg);
-
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(inMsg);
 

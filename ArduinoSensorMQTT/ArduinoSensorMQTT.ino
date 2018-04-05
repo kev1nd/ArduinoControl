@@ -5,14 +5,15 @@
 
    Author: Kevin Dunwell
 
-    Version 1.1.0
+    Version 1.1.1
 
 
      02/03/18  1.0.2   Changed SSID to VioletInternet for new hub
      02/03/18  1.0.3   Add support for DHT11. Add support for Photo-resistor
      02/03/18  1.0.4   Add WiFiEsp library and EEPROM storage for ssid/password
      03/01/18  1.0.5   Remove WiFiEsp in favour of home-grown ESP8266/ThingSpeak library
-     18/3/18   1.1.0   Converted ESP8266 as MQTT communicator
+     18/03/18  1.1.0   Converted ESP8266 as MQTT communicator
+     05/04/18  1.1.1   Support for debug/information messages coming from the ESP8266
 
 */
 
@@ -40,43 +41,51 @@ boolean syncInit = false;
 
 void parseStream() {
   if (Serial1.available() > 0) {
-    DynamicJsonBuffer jb;
+    DynamicJsonBuffer jb(800);
     JsonObject& root = jb.parseObject(Serial1);
 
     if (root.success()) {
       Serial.println("Parse success");
-      JsonObject& desired = root["state"]["desired"];
-      int ledset = root["state"]["desired"]["ledstate"];
-      long delaymil = root["state"]["desired"]["delay"];
-      bool changed = false;
+      root.prettyPrintTo(Serial);
+      Serial.println();
+      if (root.containsKey("information")) {
+        String msg = root["information"]; 
+        Serial.print("ESP:"); 
+        Serial.println(msg);
+      } else  { //if (root.containsKey("state"))
+        JsonObject& desired = root["state"]["desired"];
+        //desired.prettyPrintTo(Serial);
+        int ledset = root["state"]["desired"]["ledstate"];
+        long delaymil = root["state"]["desired"]["delay"];
+        bool changed = false;
 
-      if (desired.containsKey("delay")) {
-        Serial.print("New delay: ");
-        Serial.println(delaymil);
-        if (delayMillis != delaymil) {
-          changed = true;
-          delayMillis = delaymil;
+        if (desired.containsKey("delay")) {
+          Serial.print("New delay: ");
+          Serial.println(delaymil);
+          if (delayMillis != delaymil) {
+            changed = true;
+            delayMillis = delaymil;
+          }
+          syncInit = true;
         }
-        syncInit = true;
-      }
 
-      if (desired.containsKey("ledstate")) {
-        Serial.print("LED:");
-        Serial.println(ledset);
-        if (ledset != lightOn) {
-          changed = true;
-          lightOn = ledset;
-          setLED();
+        if (desired.containsKey("ledstate")) {
+          Serial.print("LED:");
+          Serial.println(ledset);
+          if (ledset != lightOn) {
+            changed = true;
+            lightOn = ledset;
+            setLED();
+          }
+        }
+
+        if (changed) {
+          syncInit = true;
+          sendState();
         }
       }
 
-      if (changed) {
-        syncInit = true;
-        sendState();
-      }
 
-    } else {
-      Serial.println("Parse fail");
     }
   }
 }
@@ -163,6 +172,10 @@ void loop()
     }
   }
   parseStream();
+
+//  while (Serial1.available()) {    
+//    Serial.print((char)Serial1.read());
+//  }
 
 }
 
